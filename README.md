@@ -10,5 +10,10 @@ cmake --build build
 ## Usage
 ### Generate a PPM Image
 ```
-./ppm_render.exe > bin/gradient.ppm
+./build/render_ppm.exe > gradient.ppm
 ```
+
+### Run The Raytracer
+
+
+### Run Tests
