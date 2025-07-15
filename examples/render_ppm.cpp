@@ -1,7 +1,6 @@
 #include <iostream>
 #include <cmath>
 #include <thread>
-#include <chrono>
 
 #define CURSOR_START "\r"
 #define CLEAR_LINE "\033[K" // ANSI escape code to clear from cursor to end of line
