@@ -59,4 +59,4 @@ private:
 
 using point3 = vec3;
 
-#endif
+#endif // VEC3_HPP

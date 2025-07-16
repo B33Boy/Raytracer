@@ -59,4 +59,4 @@ inline std::ostream &operator<<(std::ostream &out, vec3 const &v)
     return v / v.length();
 }
 
-#endif
+#endif // UTIL_HPP
