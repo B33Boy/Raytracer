@@ -8,8 +8,8 @@ class vec3
 {
 public:
     // ============= Constructors =============
-    vec3() : e{0, 0, 0} {}
-    vec3(double e0, double e1, double e2) : e{e0, e1, e2} {}
+    constexpr vec3() noexcept = default;
+    constexpr vec3(double e0, double e1, double e2) noexcept : e{e0, e1, e2} {}
 
     // ============= Getters =============
     [[nodiscard]] constexpr double x() const noexcept { return e[0]; }
@@ -54,7 +54,7 @@ public:
     }
 
 private:
-    double e[3];
+    double e[3]{0, 0, 0};
 };
 
 using point3 = vec3;
