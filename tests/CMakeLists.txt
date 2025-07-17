@@ -14,6 +14,7 @@ enable_testing()
 
 add_executable(run_all_tests
     test_color.cpp
+    test_ray.cpp
 )
 
 # Link Google Test libraries AND your RaytracerCore (header-only) library
