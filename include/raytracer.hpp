@@ -5,5 +5,6 @@
 #include "vec3.hpp"
 #include "util.hpp"
 #include "color.hpp"
+#include "ray.hpp"
 
 #endif // RAYTRACER_HPP
