@@ -6,8 +6,25 @@
 #define CURSOR_START "\r"
 #define CLEAR_LINE "\033[K" // ANSI escape code to clear from cursor to end of line
 
-constexpr color ray_color(ray const &r)
+[[nodiscard]] constexpr bool hit_sphere(auto const &center, const double radius, ray const &r) noexcept
 {
+
+    vec3 O_C = center - r.origin();
+    auto a = dot(r.direction(), r.direction());
+    auto b = -2.0 * dot(r.direction(), O_C);
+    auto c = dot(O_C, O_C) - radius * radius;
+    auto discriminant = b * b - 4 * a * c;
+
+    // if discriminant == 0 then 1 root, if discriminant > 0 then 2 real roots
+    // we dgaf about imaginary solutions
+    return discriminant >= 0;
+}
+
+color ray_color(ray const &r)
+{
+    if (hit_sphere(point3(0, 0, -1), 0.5, r))
+        return color(1, 0, 0);
+
     vec3 unit_direction = unit_vector(r.direction());                   //  [-1, 1]
     auto a = 0.5 * (unit_direction.y() + 1.0);                          // scale it to [0, 1]
     return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0); // Blend between two colours
@@ -26,7 +43,7 @@ int main()
     // ====== Camera ======
     constexpr auto focal_length = 1.0;
     constexpr auto viewport_height = 2.0;
-    constexpr auto viewport_width = viewport_height * static_cast<double>(image_width / image_height);
+    constexpr auto viewport_width = viewport_height * static_cast<double>(image_width) / image_height;
     constexpr auto camera_center = point3(0, 0, 0);
 
     // ====== Calculate vectors across horizontal and down vertical viewport edge ======
