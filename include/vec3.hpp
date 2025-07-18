@@ -43,7 +43,7 @@ public:
     }
 
     // ============= Member functions =============
-    [[nodiscard]] constexpr double length() const noexcept
+    [[nodiscard]] double length() const noexcept // Note: std::sqrt can only be computed at runtime (as of cpp23)
     {
         return static_cast<double>(std::sqrt(length_squared()));
     }
