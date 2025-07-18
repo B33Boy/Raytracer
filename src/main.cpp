@@ -1,15 +1,22 @@
 #include <iostream>
-#include "raytracer.hpp"
 
-color ray_color(ray const &r)
+#include "raytracer.hpp"
+#include "timer.hpp"
+
+#define CURSOR_START "\r"
+#define CLEAR_LINE "\033[K" // ANSI escape code to clear from cursor to end of line
+
+constexpr color ray_color(ray const &r)
 {
-    vec3 unit_direction = unit_vector(r.direction());
-    auto a = 0.5 * (unit_direction.y() + 1.0);
-    return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
+    vec3 unit_direction = unit_vector(r.direction());                   //  [-1, 1]
+    auto a = 0.5 * (unit_direction.y() + 1.0);                          // scale it to [0, 1]
+    return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0); // Blend between two colours
 }
 
 int main()
 {
+    scoped_timer timer;
+
     // ====== Image ======
     // Calculate image height
     constexpr auto aspect_ratio = 16.0 / 9.0;
@@ -46,10 +53,10 @@ int main()
             auto ray_direction = pixel_center - camera_center;
             ray r(camera_center, ray_direction);
 
-            auto pixel_color = ray_color(r);
+            color pixel_color = ray_color(r);
             write_color(std::cout, pixel_color);
         }
     }
 
-    std::clog << "\rDone.                 \n";
+    std::clog << CURSOR_START << CLEAR_LINE << "Done.";
 }
