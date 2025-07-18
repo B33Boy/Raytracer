@@ -9,11 +9,11 @@
 [[nodiscard]] constexpr bool hit_sphere(auto const &center, const double radius, ray const &r) noexcept
 {
 
-    vec3 O_C = center - r.origin();
-    auto a = dot(r.direction(), r.direction());
-    auto b = -2.0 * dot(r.direction(), O_C);
-    auto c = dot(O_C, O_C) - radius * radius;
-    auto discriminant = b * b - 4 * a * c;
+    auto const O_C = center - r.origin();
+    auto const a = dot(r.direction(), r.direction());
+    auto const b = -2.0 * dot(r.direction(), O_C);
+    auto const c = dot(O_C, O_C) - radius * radius;
+    auto const discriminant = b * b - 4 * a * c;
 
     // if discriminant == 0 then 1 root, if discriminant > 0 then 2 real roots
     // we dgaf about imaginary solutions
