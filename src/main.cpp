@@ -13,10 +13,10 @@
 {
 
     auto const O_C = center - r.origin();
-    auto const a = dot(r.direction(), r.direction());
-    auto const b = -2.0 * dot(r.direction(), O_C);
-    auto const c = dot(O_C, O_C) - radius * radius;
-    auto const discriminant = b * b - 4 * a * c;
+    auto const a = r.direction().length_squared();
+    auto const h = dot(r.direction(), O_C);
+    auto const c = O_C.length_squared() - radius * radius;
+    auto const discriminant = h * h - a * c;
 
     // if discriminant == 0 then 1 root, if discriminant > 0 then 2 real roots
     // we dgaf about imaginary solutions
@@ -24,7 +24,7 @@
     if (discriminant < 0)
         return -1.0; // no hit
     else
-        return (-b - std::sqrt(discriminant)) / (2.0 * a); // the smallest root of quadratic formula (closest intersection along the ray)
+        return (h - std::sqrt(discriminant)) / a; // the smallest root of quadratic formula (closest intersection along the ray)
 }
 
 color ray_color(ray const &r)
@@ -35,7 +35,7 @@ color ray_color(ray const &r)
     if (t > 0.0)
     {
         vec3 N = unit_vector(r.at(t) - vec3(0, 0, -1));
-        return 0.5 * color(N.x() + 1, N.y() + 1, N.z() + 1);
+        return 0.5 * color(N.x() + 1, N.y() + 1, N.z() + 1); // convert from -1 to 1 to
     }
 
     // Draw the background
