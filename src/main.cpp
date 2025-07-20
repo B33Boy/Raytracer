@@ -6,7 +6,10 @@
 #define CURSOR_START "\r"
 #define CLEAR_LINE "\033[K" // ANSI escape code to clear from cursor to end of line
 
-[[nodiscard]] constexpr bool hit_sphere(auto const &center, const double radius, ray const &r) noexcept
+#define COLOR_WHITE color(1.0, 1.0, 1.0)
+#define COLOR_LIGHT_BLUE color(0.5, 0.7, 1.0)
+
+[[nodiscard]] constexpr double hit_sphere(auto const &center, const double radius, ray const &r) noexcept
 {
 
     auto const O_C = center - r.origin();
@@ -17,17 +20,28 @@
 
     // if discriminant == 0 then 1 root, if discriminant > 0 then 2 real roots
     // we dgaf about imaginary solutions
-    return discriminant >= 0;
+
+    if (discriminant < 0)
+        return -1.0; // no hit
+    else
+        return (-b - std::sqrt(discriminant)) / (2.0 * a); // the smallest root of quadratic formula (closest intersection along the ray)
 }
 
 color ray_color(ray const &r)
 {
-    if (hit_sphere(point3(0, 0, -1), 0.5, r))
-        return color(1, 0, 0);
+    // Draw the point where the ray intersects the sphere
+    auto t = hit_sphere(point3(0, 0, -1), 0.5, r);
 
-    vec3 unit_direction = unit_vector(r.direction());                   //  [-1, 1]
-    auto a = 0.5 * (unit_direction.y() + 1.0);                          // scale it to [0, 1]
-    return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0); // Blend between two colours
+    if (t > 0.0)
+    {
+        vec3 N = unit_vector(r.at(t) - vec3(0, 0, -1));
+        return 0.5 * color(N.x() + 1, N.y() + 1, N.z() + 1);
+    }
+
+    // Draw the background
+    vec3 unit_direction = unit_vector(r.direction());      //  [-1, 1]
+    auto a = 0.5 * (unit_direction.y() + 1.0);             // scale it to [0, 1]
+    return (1.0 - a) * COLOR_WHITE + a * COLOR_LIGHT_BLUE; // Blend between two colours
 }
 
 int main()
