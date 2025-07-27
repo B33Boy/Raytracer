@@ -4,6 +4,10 @@ project(Raytracer VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    message(STATUS "Using Clang: enabling compile_commands.json")
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+endif()
 
 # ====== Header-Only Library ======
 # INTERFACE libraries do not produce any build output (no .lib/.so/.dll).
