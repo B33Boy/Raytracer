@@ -1,10 +1,16 @@
 ## Raytracer
 
 ## Setup
-From the root of the project:
+From the root of the project, build with gcc:
 ```bash
-cmake -B build -S .
-cmake --build build
+CXX=g++ cmake -B build/build-gcc
+cmake --build build/build-gcc
+```
+
+From the root of the project, build with clang:
+```bash
+CXX=clang++ cmake -B build/build-clang
+cmake --build build/build-clang
 ```
 
 ## Usage

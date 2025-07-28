@@ -5,9 +5,13 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    message(STATUS "Using Clang: enabling compile_commands.json")
+    message(STATUS "Using Clang")
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    message(STATUS "Using GCC")
 endif()
+
+add_compile_options(-Wall -Wextra -Wpedantic)
 
 # ====== Header-Only Library ======
 # INTERFACE libraries do not produce any build output (no .lib/.so/.dll).
