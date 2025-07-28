@@ -1,5 +1,6 @@
-#include <gtest/gtest.h>
 #include "ray.hpp"
+
+#include <gtest/gtest.h>
 
 TEST(RayTest, GetValueAtT)
 {

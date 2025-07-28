@@ -3,13 +3,13 @@
 
 #include "vec3.hpp"
 
-#include <ostream>
 #include <algorithm> // std::clamp
 #include <cmath>     // std::round
+#include <ostream>
 
 using color = vec3;
 
-void write_color(std::ostream &out, color const &pixel_color)
+void write_color(std::ostream& out, color const& pixel_color)
 {
     // rgb values should be within [0, 1]
     auto r = std::clamp(pixel_color.x(), 0.0, 1.0);

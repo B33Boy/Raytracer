@@ -1,5 +1,6 @@
-#include <gtest/gtest.h>
 #include "color.hpp"
+
+#include <gtest/gtest.h>
 
 // Demonstrate some basic assertions.
 TEST(WriteColorTest, OutputsCorrectValues)

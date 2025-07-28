@@ -10,7 +10,9 @@
 class scoped_timer
 {
 public:
-    scoped_timer() : start_(std::chrono::high_resolution_clock::now()) {}
+    scoped_timer() : start_(std::chrono::high_resolution_clock::now())
+    {
+    }
     ~scoped_timer()
     {
         auto end = std::chrono::high_resolution_clock::now();

@@ -1,19 +1,27 @@
 #ifndef RAY_HPP
 #define RAY_HPP
 
-#include "vec3.hpp"
 #include "util.hpp"
+#include "vec3.hpp"
 
 class ray
 {
 public:
     // ============= Constructors =============
     constexpr ray() noexcept = default;
-    constexpr ray(point3 const &origin, vec3 const &dir) noexcept : origin_(origin), dir_(dir) {}
+    constexpr ray(point3 const& origin, vec3 const& dir) noexcept : origin_(origin), dir_(dir)
+    {
+    }
 
     // ============= Getters =============
-    [[nodiscard]] constexpr point3 const &origin() const noexcept { return origin_; }
-    [[nodiscard]] constexpr vec3 const &direction() const noexcept { return dir_; }
+    [[nodiscard]] constexpr point3 const& origin() const noexcept
+    {
+        return origin_;
+    }
+    [[nodiscard]] constexpr vec3 const& direction() const noexcept
+    {
+        return dir_;
+    }
 
     // ============= Member functions =============
     [[nodiscard]] constexpr point3 at(double t) const noexcept
