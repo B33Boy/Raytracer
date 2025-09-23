@@ -18,21 +18,20 @@ public:
         auto const h = dot(r.direction(), O_C);
         auto const c = O_C.length_squared() - radius * radius;
 
-        auto discriminant = h * h - a * c;
         // if discriminant == 0 then 1 root, if discriminant > 0 then 2 real roots
         // we dgaf about imaginary solutions
-
+        auto discriminant = h * h - a * c;
         if ( discriminant < 0 )
             return false;
 
-        auto const sqrtd = std::sqrt(discriminant);
-
         // Find the nearest root that lies in the acceptable range.
+        auto const sqrtd = std::sqrt(discriminant);
         auto root = (h - sqrtd) / a;
-        if ( root <= ray_tmin || ray_tmax <= root )
+
+        if ( !within_range(root, ray_tmin, ray_tmax) )
         {
             root = (h + sqrtd) / a;
-            if ( root <= ray_tmin || ray_tmax <= root )
+            if ( !within_range(root, ray_tmin, ray_tmax) )
                 return false;
         }
 
@@ -47,6 +46,11 @@ public:
 private:
     point3 center;
     double radius;
+
+    bool within_range(double const val, double const lower, double const upper) const
+    {
+        return (lower < val && val < upper);
+    }
 };
 
 #endif

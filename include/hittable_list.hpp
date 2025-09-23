@@ -11,6 +11,8 @@ class hittable_list : public hittable
 public:
     std::vector<std::shared_ptr<hittable>> objects;
     hittable_list() = default;
+
+
     hittable_list(std::shared_ptr<hittable> obj)
     {
         add(obj);
