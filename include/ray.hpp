@@ -1,8 +1,8 @@
 #ifndef RAY_HPP
 #define RAY_HPP
 
-#include "util.hpp"
 #include "vec3.hpp"
+#include "vec3_util.hpp"
 
 class ray
 {

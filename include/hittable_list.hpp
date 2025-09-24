@@ -9,16 +9,16 @@
 class hittable_list : public hittable
 {
 public:
-    std::vector<std::shared_ptr<hittable>> objects;
+    // ============= Constructors =============
     hittable_list() = default;
 
-
-    hittable_list(std::shared_ptr<hittable> obj)
+    hittable_list(std::shared_ptr<hittable> const& obj)
     {
         add(obj);
     }
 
-    void add(std::shared_ptr<hittable> obj)
+    // ============= Member functions =============
+    void add(std::shared_ptr<hittable> const& obj) noexcept
     {
         objects.push_back(obj);
     }
@@ -40,6 +40,9 @@ public:
         }
         return hit_anything;
     }
+
+private:
+    std::vector<std::shared_ptr<hittable>> objects;
 };
 
 #endif

@@ -1,7 +1,6 @@
-#ifndef UTIL_HPP
-#define UTIL_HPP
+#ifndef VEC3_UTIL_HPP
+#define VEC3_UTIL_HPP
 
-#include "ray.hpp"
 #include "vec3.hpp"
 
 // ============= Vec3 utility functions =============
@@ -57,9 +56,5 @@ inline std::ostream& operator<<(std::ostream& out, vec3 const& v)
 
     return v / v.length();
 }
-
-// ============= Collision Util =============
-
-// ============= Visualization Util =============
 
 #endif // UTIL_HPP

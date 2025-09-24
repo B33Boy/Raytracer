@@ -4,11 +4,13 @@
 // clang-format off
 
 // Convenience header to reduce repetitive includes
-#include "color.hpp"
+#include "rtweekend.hpp"
 #include "vec3.hpp"
-#include "ray.hpp"  // ray depends on vec3
-#include "util.hpp" // util depends on vec3 and ray
-#include "hittable.hpp" // hittable depends on ray
+#include "vec3_util.hpp" 
+#include "color.hpp"
+#include "ray.hpp"  
+#include "hittable.hpp"
+#include "hittable_list.hpp"
 
 // clang-format on
 
