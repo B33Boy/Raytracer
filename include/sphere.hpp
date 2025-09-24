@@ -11,7 +11,7 @@ public:
     {
     }
 
-    [[nodiscard]] bool hit(ray const& r, double ray_tmin, double ray_tmax, hit_record& rec) const override
+    [[nodiscard]] bool hit(ray const& r, interval ray_t, hit_record& rec) const override
     {
         auto const O_C = center - r.origin();
         auto const a = r.direction().length_squared();
@@ -28,10 +28,10 @@ public:
         auto const sqrtd = std::sqrt(discriminant);
         auto root = (h - sqrtd) / a;
 
-        if ( !within_range(root, ray_tmin, ray_tmax) )
+        if ( !ray_t.surrounds(root) )
         {
             root = (h + sqrtd) / a;
-            if ( !within_range(root, ray_tmin, ray_tmax) )
+            if ( !ray_t.surrounds(root) )
                 return false;
         }
 
@@ -46,11 +46,6 @@ public:
 private:
     point3 center;
     double radius;
-
-    bool within_range(double const val, double const lower, double const upper) const
-    {
-        return (lower < val && val < upper);
-    }
 };
 
-#endif
+#endif // SPHERE_HPP

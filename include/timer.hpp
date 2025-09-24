@@ -24,4 +24,4 @@ private:
     std::chrono::high_resolution_clock::time_point start_;
 };
 
-#endif
+#endif // TIMER_HPP

@@ -4,7 +4,7 @@
 // clang-format off
 
 // Convenience header to reduce repetitive includes
-#include "rtweekend.hpp"
+#include "util.hpp"
 #include "vec3.hpp"
 #include "vec3_util.hpp" 
 #include "color.hpp"

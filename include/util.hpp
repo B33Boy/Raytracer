@@ -1,5 +1,5 @@
-#ifndef RTWEEKEND_HPP
-#define RTWEEKEND_HPP
+#ifndef UTIL_HPP
+#define UTIL_HPP
 
 #include <limits> // numeric_limits
 
@@ -13,4 +13,6 @@ constexpr double pi = 3.1415926535897932385;
     return degrees * pi / 180.0;
 }
 
-#endif
+#include "interval.hpp"
+
+#endif // UTIL_HPP

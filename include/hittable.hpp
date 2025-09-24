@@ -34,10 +34,8 @@ class hittable
 public:
     virtual ~hittable() = default;
 
-    /*
-        Hit only counts if tmin < t < tmax.
-    */
-    virtual bool hit(ray const& r, double ray_tmin, double ray_tmax, hit_record& rec) const = 0;
+    // Hit only counts if tmin < t < tmax.
+    virtual bool hit(ray const& r, interval ray_t, hit_record& rec) const = 0;
 };
 
-#endif
+#endif // HITTABLE_HPP
