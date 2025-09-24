@@ -1,42 +1,21 @@
 #include "raytracer.hpp"
+#include "sphere.hpp"
 #include "timer.hpp"
 
 #include <iostream>
 
-#define CURSOR_START "\r"
+#define CURSOR_START "\r"   // Carriage return to go back to beginning of a line of text
 #define CLEAR_LINE "\033[K" // ANSI escape code to clear from cursor to end of line
 
 #define COLOR_WHITE color(1.0, 1.0, 1.0)
 #define COLOR_LIGHT_BLUE color(0.5, 0.7, 1.0)
 
-[[nodiscard]] constexpr double hit_sphere(auto const& center, const double radius, ray const& r) noexcept
+color ray_color(ray const& r, hittable const& world)
 {
-
-    auto const O_C = center - r.origin();
-    auto const a = r.direction().length_squared();
-    auto const h = dot(r.direction(), O_C);
-    auto const c = O_C.length_squared() - radius * radius;
-    auto const discriminant = h * h - a * c;
-
-    // if discriminant == 0 then 1 root, if discriminant > 0 then 2 real roots
-    // we dgaf about imaginary solutions
-
-    if ( discriminant < 0 )
-        return -1.0; // no hit
-    else
-        return (h - std::sqrt(discriminant)) /
-               a; // the smallest root of quadratic formula (closest intersection along the ray)
-}
-
-color ray_color(ray const& r)
-{
-    // Draw the point where the ray intersects the sphere
-    auto t = hit_sphere(point3(0, 0, -1), 0.5, r);
-
-    if ( t > 0.0 )
+    hit_record rec;
+    if ( world.hit(r, 0, infinity, rec) )
     {
-        vec3 N = unit_vector(r.at(t) - vec3(0, 0, -1));
-        return 0.5 * color(N.x() + 1, N.y() + 1, N.z() + 1); // convert from -1 to 1 to
+        return 0.5 * (rec.normal + color(1, 1, 1));
     }
 
     // Draw the background
@@ -54,6 +33,11 @@ int main()
     constexpr auto aspect_ratio = 16.0 / 9.0;
     constexpr int image_width = 400;
     constexpr int image_height = std::max(1, static_cast<int>(image_width / aspect_ratio));
+
+    // ====== World ======
+    hittable_list world;
+    world.add(std::make_shared<sphere>(point3(0, 0, -1), 0.5));
+    world.add(std::make_shared<sphere>(point3(0, -100.5, -1), 100));
 
     // ====== Camera ======
     constexpr auto focal_length = 1.0;
@@ -86,7 +70,7 @@ int main()
             auto ray_direction = pixel_center - camera_center;
             ray r(camera_center, ray_direction);
 
-            color pixel_color = ray_color(r);
+            color pixel_color = ray_color(r, world);
             write_color(std::cout, pixel_color);
         }
     }
