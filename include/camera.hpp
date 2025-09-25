@@ -12,10 +12,12 @@ struct cam_params
 {
     double aspect_ratio = 16.0 / 9.0;
     int image_width = 400;
+    int samples_per_pixel = 100; // Count of random samples for each pixel
 };
 
 struct derived_params
 {
+    double pixel_samples_scale; // Color scale factor for a sum of pixel samples
     point3 center;
     int image_height;
     vec3 pixel_delta_u;
@@ -27,6 +29,8 @@ struct derived_params
 constexpr derived_params compute_derived_params(cam_params const& p)
 {
     // ====== Image ======
+    double pixel_samples_scale = 1.0 / p.samples_per_pixel;
+
     int image_height = static_cast<int>(p.image_width / p.aspect_ratio);
     image_height = (image_height > 1) ? image_height : 1;
 
@@ -50,7 +54,7 @@ constexpr derived_params compute_derived_params(cam_params const& p)
     auto pixel00_loc = viewport_upper_left +
                        0.5 * (pixel_delta_u + pixel_delta_v); // we do 0.5 to move to the center of the first pixel
 
-    return derived_params{ center, image_height, pixel_delta_u, pixel_delta_v, pixel00_loc };
+    return derived_params{ pixel_samples_scale, center, image_height, pixel_delta_u, pixel_delta_v, pixel00_loc };
 }
 
 class camera
@@ -69,12 +73,13 @@ public:
             std::clog << "\rScanlines remaining: " << (d.image_height - j) << ' ' << std::flush;
             for ( int i = 0; i < p.image_width; i++ )
             {
-                auto pixel_center = d.pixel00_loc + (i * d.pixel_delta_u) + (j * d.pixel_delta_v);
-                auto ray_direction = pixel_center - d.center;
-                ray r(d.center, ray_direction);
-
-                color pixel_color = ray_color(r, world);
-                write_color(std::cout, pixel_color);
+                color pixel_color(0, 0, 0);
+                for ( int sample = 0; sample < p.samples_per_pixel; sample++ )
+                {
+                    ray r = get_ray(i, j);
+                    pixel_color += ray_color(r, world);
+                }
+                write_color(std::cout, d.pixel_samples_scale * pixel_color);
             }
         }
 
@@ -97,6 +102,26 @@ private:
         vec3 unit_direction = unit_vector(r.direction());
         auto a = 0.5 * (unit_direction.y() + 1.0);
         return (1.0 - a) * COLOR_WHITE + a * COLOR_LIGHT_BLUE;
+    }
+
+    ray get_ray(int i, int j) const
+    {
+        // Construct a camera ray originating from the origin and directed at randomly sampled
+        // point around the pixel location i, j.
+
+        auto offset = sample_square();
+        auto pixel_sample = d.pixel00_loc + ((i + offset.x()) * d.pixel_delta_u) + ((j + offset.y()) * d.pixel_delta_v);
+
+        auto ray_origin = d.center;
+        auto ray_direction = pixel_sample - ray_origin;
+
+        return ray(ray_origin, ray_direction);
+    }
+
+    vec3 sample_square() const
+    {
+        // Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5] unit square.
+        return vec3(random_double() - 0.5, random_double() - 0.5, 0);
     }
 };
 
