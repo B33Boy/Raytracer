@@ -1,4 +1,17 @@
-## Raytracer
+# Raytracer
+
+## Build & Run 
+
+To build and run the project in one step, use the provided scripts:
+```bash
+./run_clang.sh
+
+./run_gcc.sh
+```
+
+If you prefer to build manually (without running), see the setup instructions below.
+
+---
 
 ## Setup
 From the root of the project, build with gcc:
@@ -14,24 +27,24 @@ cmake --build build/build-clang
 ```
 
 ## Usage
-### Generate a PPM Image
-```
+### Generate a basic gradient image
+```bash
 ./build/render_ppm > gradient.ppm
 ```
 
-### Run The Raytracer
-```
+### Render the scene
+```bash
 ./build/raytracer > raytracer.ppm
 ```
 
-### Run Tests
-```
+### Run tests
+```bash
 ./build/tests/run_all_tests
 ```
 
 or 
 
-```
+```bash
 cd ./build/tests
 ctest
 ```
