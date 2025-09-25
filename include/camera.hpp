@@ -25,40 +25,40 @@ struct derived_params
     point3 pixel00_loc;
 };
 
-// Free function defined before constructor
-constexpr derived_params compute_derived_params(cam_params const& p)
-{
-    // ====== Image ======
-    double pixel_samples_scale = 1.0 / p.samples_per_pixel;
-
-    int image_height = static_cast<int>(p.image_width / p.aspect_ratio);
-    image_height = (image_height > 1) ? image_height : 1;
-
-    point3 center{ 0, 0, 0 };
-
-    // ====== Camera ======
-    auto focal_length = 1.0;
-    auto viewport_height = 2.0;
-    auto viewport_width = viewport_height * static_cast<double>(p.image_width) / image_height;
-
-    // // ====== Calculate vectors across horizontal and down vertical viewport edge ======
-    auto viewport_u = vec3(viewport_width, 0, 0);   // >
-    auto viewport_v = vec3(0, -viewport_height, 0); // v
-
-    // ====== Calculate horizontal and vertical delta vectors ======
-    auto pixel_delta_u = viewport_u / p.image_width;
-    auto pixel_delta_v = viewport_v / image_height;
-
-    // ====== Calculate the location of upper left pixel ======
-    auto viewport_upper_left = center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
-    auto pixel00_loc = viewport_upper_left +
-                       0.5 * (pixel_delta_u + pixel_delta_v); // we do 0.5 to move to the center of the first pixel
-
-    return derived_params{ pixel_samples_scale, center, image_height, pixel_delta_u, pixel_delta_v, pixel00_loc };
-}
-
 class camera
 {
+private:
+    constexpr derived_params compute_derived_params(cam_params const& p)
+    {
+        // ====== Image ======
+        double pixel_samples_scale = 1.0 / p.samples_per_pixel;
+
+        int image_height = static_cast<int>(p.image_width / p.aspect_ratio);
+        image_height = (image_height > 1) ? image_height : 1;
+
+        point3 center{ 0, 0, 0 };
+
+        // ====== Camera ======
+        auto focal_length = 1.0;
+        auto viewport_height = 2.0;
+        auto viewport_width = viewport_height * static_cast<double>(p.image_width) / image_height;
+
+        // // ====== Calculate vectors across horizontal and down vertical viewport edge ======
+        auto viewport_u = vec3(viewport_width, 0, 0);   // >
+        auto viewport_v = vec3(0, -viewport_height, 0); // v
+
+        // ====== Calculate horizontal and vertical delta vectors ======
+        auto pixel_delta_u = viewport_u / p.image_width;
+        auto pixel_delta_v = viewport_v / image_height;
+
+        // ====== Calculate the location of upper left pixel ======
+        auto viewport_upper_left = center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
+        auto pixel00_loc = viewport_upper_left +
+                           0.5 * (pixel_delta_u + pixel_delta_v); // we do 0.5 to move to the center of the first pixel
+
+        return derived_params{ pixel_samples_scale, center, image_height, pixel_delta_u, pixel_delta_v, pixel00_loc };
+    }
+
 public:
     constexpr explicit camera(cam_params const& params) : p(params), d{ compute_derived_params(p) }
     {
@@ -90,25 +90,12 @@ private:
     cam_params const p;     // contains configurable params
     derived_params const d; // contains the derived params
 
-    color ray_color(ray const& r, hittable const& world) const
+    [[nodiscard]] ray get_ray(int i, int j) const
     {
-        hit_record rec;
-
-        if ( world.hit(r, interval(0, infinity), rec) )
-        {
-            return 0.5 * (rec.normal + color(1, 1, 1));
-        }
-
-        vec3 unit_direction = unit_vector(r.direction());
-        auto a = 0.5 * (unit_direction.y() + 1.0);
-        return (1.0 - a) * COLOR_WHITE + a * COLOR_LIGHT_BLUE;
-    }
-
-    ray get_ray(int i, int j) const
-    {
-        // Construct a camera ray originating from the origin and directed at randomly sampled
-        // point around the pixel location i, j.
-
+        /**
+         * Construct a camera ray originating from the origin and directed at randomly sampled
+         * point around the pixel location i, j.
+         */
         auto offset = sample_square();
         auto pixel_sample = d.pixel00_loc + ((i + offset.x()) * d.pixel_delta_u) + ((j + offset.y()) * d.pixel_delta_v);
 
@@ -118,10 +105,41 @@ private:
         return ray(ray_origin, ray_direction);
     }
 
-    vec3 sample_square() const
+    [[nodiscard]] vec3 sample_square() const
     {
         // Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5] unit square.
         return vec3(random_double() - 0.5, random_double() - 0.5, 0);
+    }
+
+    [[nodiscard]] color ray_color(ray const& r, hittable const& world) const
+    {
+        hit_record rec;
+
+        if ( world.hit(r, interval(0, infinity), rec) )
+        {
+            /**
+             * Perform diffuse shading if the ray intersects a surface.
+             * rec.normal is a vector where each value is in the range [-1, 1],
+             * adding color(1,1,1) and multiplying by 0.5 gives you a vector
+             * with each value in the range [0,1].
+             *
+             * Lighter colors if the surface points along +X/+Y/+Z
+             * Darker colors if the surface points along -X/-Y/-Z
+             */
+            return 0.5 * (rec.normal + color(1, 1, 1));
+        }
+
+        /**
+         * If a ray misses the object, then colour the background using a vertical gradient
+         * between white and blue.
+         *
+         * We base this vertical gradient on the ray's y component.
+         * Ray's y component points up (+), then we get stronger light blue
+         * Ray's y component points down (-), then we get stronger white
+         */
+        vec3 unit_direction = unit_vector(r.direction());
+        auto a = 0.5 * (unit_direction.y() + 1.0);
+        return (1.0 - a) * COLOR_WHITE + a * COLOR_LIGHT_BLUE;
     }
 };
 
