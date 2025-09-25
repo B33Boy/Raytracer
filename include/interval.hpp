@@ -1,6 +1,8 @@
 #ifndef INTERVAL_HPP
 #define INTERVAL_HPP
 
+#include "util.hpp"
+
 class interval
 {
 public:
