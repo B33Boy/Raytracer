@@ -23,6 +23,36 @@ struct derived_params
     point3 pixel00_loc;
 };
 
+// Free function defined before constructor
+constexpr derived_params compute_derived_params(cam_params const& p)
+{
+    // ====== Image ======
+    int image_height = static_cast<int>(p.image_width / p.aspect_ratio);
+    image_height = (image_height > 1) ? image_height : 1;
+
+    point3 center{ 0, 0, 0 };
+
+    // ====== Camera ======
+    auto focal_length = 1.0;
+    auto viewport_height = 2.0;
+    auto viewport_width = viewport_height * static_cast<double>(p.image_width) / image_height;
+
+    // // ====== Calculate vectors across horizontal and down vertical viewport edge ======
+    auto viewport_u = vec3(viewport_width, 0, 0);   // >
+    auto viewport_v = vec3(0, -viewport_height, 0); // v
+
+    // ====== Calculate horizontal and vertical delta vectors ======
+    auto pixel_delta_u = viewport_u / p.image_width;
+    auto pixel_delta_v = viewport_v / image_height;
+
+    // ====== Calculate the location of upper left pixel ======
+    auto viewport_upper_left = center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
+    auto pixel00_loc = viewport_upper_left +
+                       0.5 * (pixel_delta_u + pixel_delta_v); // we do 0.5 to move to the center of the first pixel
+
+    return derived_params{ center, image_height, pixel_delta_u, pixel_delta_v, pixel00_loc };
+}
+
 class camera
 {
 public:
@@ -54,36 +84,6 @@ public:
 private:
     cam_params const p;     // contains configurable params
     derived_params const d; // contains the derived params
-
-    constexpr derived_params compute_derived_params(cam_params const& p)
-    {
-
-        // ====== Image ======
-        int image_height = static_cast<int>(p.image_width / p.aspect_ratio);
-        image_height = (image_height > 1) ? image_height : 1;
-
-        point3 center{ 0, 0, 0 };
-
-        // ====== Camera ======
-        auto focal_length = 1.0;
-        auto viewport_height = 2.0;
-        auto viewport_width = viewport_height * static_cast<double>(p.image_width) / image_height;
-
-        // // ====== Calculate vectors across horizontal and down vertical viewport edge ======
-        auto viewport_u = vec3(viewport_width, 0, 0);   // >
-        auto viewport_v = vec3(0, -viewport_height, 0); // v
-
-        // ====== Calculate horizontal and vertical delta vectors ======
-        auto pixel_delta_u = viewport_u / p.image_width;
-        auto pixel_delta_v = viewport_v / image_height;
-
-        // ====== Calculate the location of upper left pixel ======
-        auto viewport_upper_left = center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
-        auto pixel00_loc = viewport_upper_left +
-                           0.5 * (pixel_delta_u + pixel_delta_v); // we do 0.5 to move to the center of the first pixel
-
-        return derived_params{ center, image_height, pixel_delta_u, pixel_delta_v, pixel00_loc };
-    }
 
     color ray_color(ray const& r, hittable const& world) const
     {
