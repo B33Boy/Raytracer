@@ -2,4 +2,4 @@
 
 CXX=clang++ cmake -B build/build-clang
 cmake --build build/build-clang
-./build/raytracer > raytracer.ppm
+./build/build-clang/raytracer > raytracer.ppm

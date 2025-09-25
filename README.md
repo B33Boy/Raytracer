@@ -29,12 +29,14 @@ cmake --build build/build-clang
 ## Usage
 ### Generate a basic gradient image
 ```bash
-./build/render_ppm > gradient.ppm
+./build/build-gcc/render_ppm > gradient.ppm
+./build/build-clang/render_ppm > gradient.ppm
 ```
 
 ### Render the scene
 ```bash
-./build/raytracer > raytracer.ppm
+./build/build-gcc/raytracer > raytracer.ppm
+./build/build-clang/raytracer > raytracer.ppm
 ```
 
 ### Run tests
