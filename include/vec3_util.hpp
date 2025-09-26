@@ -57,4 +57,38 @@ inline std::ostream& operator<<(std::ostream& out, vec3 const& v)
     return v / v.length();
 }
 
+[[nodiscard]] inline vec3 random_unit_vector()
+{
+    /**
+     * Rejection method to generate samples until we produce one that meets criteria.
+     * 1. Generate random vec inside unit sphere
+     * 2. Normalize to extend it to sphere surface
+     * 3. Invert the normalized vector if it falls onto wrong hemisphere
+     *
+     * Note: because floating point numbers have finite precision, a small value can underflow to 0 when squared.
+     *  This can cause the normalized vector to approach infinity, so we need a minimum size of points to reject.
+     */
+    while ( true )
+    {
+        auto p = vec3::random(-1, 1);
+        auto lensq = p.length_squared();
+        if ( lensq > 1e-160 && lensq <= 1 )
+            return p / sqrt(lensq);
+    }
+}
+
+[[nodiscard]] inline vec3 random_on_hemisphere(vec3 const& normal)
+{
+    /**
+     * Using the normal, we can do dot product with the generated unit vector to ensure that it points in the same
+     * hemisphere (i.e. unit vector and normal have acute angle).
+     */
+
+    vec3 on_unit_sphere = random_unit_vector();
+    if ( dot(on_unit_sphere, normal) > 0.0 ) // In the same hemisphere as the normal
+        return on_unit_sphere;
+    else
+        return -on_unit_sphere;
+}
+
 #endif // VEC3_UTIL_HPP

@@ -118,6 +118,7 @@ private:
         if ( world.hit(r, interval(0, infinity), rec) )
         {
             /**
+             * OLD - return 0.5 * (rec.normal + color(1, 1, 1))
              * Perform diffuse shading if the ray intersects a surface.
              * rec.normal is a vector where each value is in the range [-1, 1],
              * adding color(1,1,1) and multiplying by 0.5 gives you a vector
@@ -125,8 +126,15 @@ private:
              *
              * Lighter colors if the surface points along +X/+Y/+Z
              * Darker colors if the surface points along -X/-Y/-Z
+             *
+             *
+             * NEW
+             * If ray bounces off material and keeps 100% of colour, then we say material is white.
+             * If ray bounces off material and keeps 0% of colour, then we say it is black.
+             *
              */
-            return 0.5 * (rec.normal + color(1, 1, 1));
+            vec3 dir = random_on_hemisphere(rec.normal);
+            return 0.5 * ray_color(ray(rec.p, dir), world);
         }
 
         /**

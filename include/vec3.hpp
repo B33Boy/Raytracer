@@ -1,6 +1,8 @@
 #ifndef VEC3_HPP
 #define VEC3_HPP
 
+#include "util.hpp"
+
 #include <cmath>
 #include <ostream>
 
@@ -71,6 +73,16 @@ public:
     [[nodiscard]] constexpr double length_squared() const noexcept
     {
         return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
+    }
+
+    [[nodiscard]] static vec3 random()
+    {
+        return vec3(random_double(), random_double(), random_double());
+    }
+
+    [[nodiscard]] static vec3 random(double min, double max)
+    {
+        return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
     }
 
 private:
