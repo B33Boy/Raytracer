@@ -13,6 +13,7 @@ struct cam_params
     double aspect_ratio = 16.0 / 9.0;
     int image_width = 400;
     int samples_per_pixel = 100; // Count of random samples for each pixel
+    int max_depth = 10;
 };
 
 struct derived_params
@@ -77,7 +78,7 @@ public:
                 for ( int sample = 0; sample < p.samples_per_pixel; sample++ )
                 {
                     ray r = get_ray(i, j);
-                    pixel_color += ray_color(r, world);
+                    pixel_color += ray_color(r, p.max_depth, world);
                 }
                 write_color(std::cout, d.pixel_samples_scale * pixel_color);
             }
@@ -111,11 +112,12 @@ private:
         return vec3(random_double() - 0.5, random_double() - 0.5, 0);
     }
 
-    [[nodiscard]] color ray_color(ray const& r, hittable const& world) const
+    [[nodiscard]] color ray_color(ray const& r, int depth, hittable const& world) const
     {
         hit_record rec;
 
-        if ( world.hit(r, interval(0, infinity), rec) )
+        if ( world.hit(r, interval(0.001, infinity), rec) )
+        // use 0.001 instead of 0 to ignore hits cery close to intersection point
         {
             /**
              * OLD - return 0.5 * (rec.normal + color(1, 1, 1))
@@ -131,10 +133,15 @@ private:
              * NEW
              * If ray bounces off material and keeps 100% of colour, then we say material is white.
              * If ray bounces off material and keeps 0% of colour, then we say it is black.
+             * Introduce ray_depth camera param to limit the number of bounces of light (i.e. max num of recursions)
              *
              */
+
+            if ( depth <= 0 )
+                return color(0, 0, 0);
+
             vec3 dir = random_on_hemisphere(rec.normal);
-            return 0.5 * ray_color(ray(rec.p, dir), world);
+            return 0.5 * ray_color(ray(rec.p, dir), depth - 1, world);
         }
 
         /**
