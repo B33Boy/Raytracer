@@ -114,6 +114,10 @@ private:
 
     [[nodiscard]] color ray_color(ray const& r, int depth, hittable const& world) const
     {
+        // If we exceed the ray bounce limit, no more light is gathered
+        if ( depth <= 0 )
+            return color(0, 0, 0);
+
         hit_record rec;
 
         if ( world.hit(r, interval(0.001, infinity), rec) )
@@ -137,11 +141,8 @@ private:
              *
              */
 
-            if ( depth <= 0 )
-                return color(0, 0, 0);
-
-            vec3 dir = random_on_hemisphere(rec.normal);
-            return 0.5 * ray_color(ray(rec.p, dir), depth - 1, world);
+            vec3 dir = rec.normal + random_unit_vector();
+            return 0.1 * ray_color(ray(rec.p, dir), depth - 1, world);
         }
 
         /**
