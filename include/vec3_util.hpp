@@ -91,4 +91,9 @@ inline std::ostream& operator<<(std::ostream& out, vec3 const& v)
         return -on_unit_sphere;
 }
 
+[[nodiscard]] inline vec3 reflect(vec3 const& v, vec3 const& n)
+{
+    return v - 2 * dot(v, n) * n;
+}
+
 #endif // VEC3_UTIL_HPP

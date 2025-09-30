@@ -4,6 +4,7 @@
 #include "color.hpp"
 #include "hittable.hpp"
 #include "interval.hpp"
+#include "material.hpp"
 #include "util.hpp"
 
 #include <iostream>
@@ -138,11 +139,15 @@ private:
              * If ray bounces off material and keeps 100% of colour, then we say material is white.
              * If ray bounces off material and keeps 0% of colour, then we say it is black.
              * Introduce ray_depth camera param to limit the number of bounces of light (i.e. max num of recursions)
-             *
+             * vec3 dir = rec.normal + random_unit_vector();
+             * return 0.1 * ray_color(ray(rec.p, dir), depth - 1, world);
              */
 
-            vec3 dir = rec.normal + random_unit_vector();
-            return 0.1 * ray_color(ray(rec.p, dir), depth - 1, world);
+            ray scattered;
+            color attenuation;
+            if ( rec.mat->scatter(r, rec, attenuation, scattered) )
+                return attenuation * ray_color(scattered, depth - 1, world);
+            return color(0, 0, 0);
         }
 
         /**

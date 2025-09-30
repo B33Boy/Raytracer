@@ -9,8 +9,10 @@
 #include "vec3_util.hpp" 
 #include "color.hpp"
 #include "ray.hpp"  
+#include "hit_record.hpp"
 #include "hittable.hpp"
 #include "hittable_list.hpp"
+#include "material.hpp"
 
 // clang-format on
 
