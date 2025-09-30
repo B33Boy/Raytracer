@@ -2,7 +2,7 @@
 #define MATERIAL_H
 
 #include "color.hpp"
-#include "hit_record.hpp"
+#include "hittable.hpp"
 #include "ray.hpp"
 
 class material
